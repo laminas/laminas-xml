@@ -1,15 +1,13 @@
 <?php
+
 /**
- * Zend Framework (http://framework.zend.com/)
- *
- * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
- * @license   http://framework.zend.com/license/new-bsd New BSD License
- * @package   Zend
+ * @see       https://github.com/laminas/laminas-xml for the canonical source repository
+ * @copyright https://github.com/laminas/laminas-xml/blob/master/COPYRIGHT.md
+ * @license   https://github.com/laminas/laminas-xml/blob/master/LICENSE.md New BSD License
  */
 
 /**
- * Set error reporting to the level to which Zend Framework code must comply.
+ * Set error reporting to the level to which Laminas code must comply.
  */
 error_reporting( E_ALL | E_STRICT );
 
@@ -18,7 +16,7 @@ if (class_exists('PHPUnit_Runner_Version', true)) {
     if ('@package_version@' !== $phpUnitVersion && version_compare($phpUnitVersion, '3.7.0', '<')) {
         echo 'This version of PHPUnit (' .
             PHPUnit_Runner_Version::id() .
-            ') is not supported for ZendXml unit tests - use v 3.7.0 or higher.'
+            ') is not supported for laminas-xml unit tests - use v 3.7.0 or higher.'
             . PHP_EOL
         ;
         exit(1);
@@ -68,18 +66,18 @@ if (defined('TESTS_GENERATE_REPORT') && TESTS_GENERATE_REPORT === true) {
     $codeCoverageFilter = new PHP_CodeCoverage_Filter();
 
     $lastArg = end($_SERVER['argv']);
-    if (is_dir($zfCoreTests . '/' . $lastArg)) {
-        $codeCoverageFilter->addDirectoryToWhitelist($zfCoreLibrary . '/' . $lastArg);
-    } elseif (is_file($zfCoreTests . '/' . $lastArg)) {
-        $codeCoverageFilter->addDirectoryToWhitelist(dirname($zfCoreLibrary . '/' . $lastArg));
+    if (is_dir($laminasCoreTests . '/' . $lastArg)) {
+        $codeCoverageFilter->addDirectoryToWhitelist($laminasCoreLibrary . '/' . $lastArg);
+    } elseif (is_file($laminasCoreTests . '/' . $lastArg)) {
+        $codeCoverageFilter->addDirectoryToWhitelist(dirname($laminasCoreLibrary . '/' . $lastArg));
     } else {
-        $codeCoverageFilter->addDirectoryToWhitelist($zfCoreLibrary);
+        $codeCoverageFilter->addDirectoryToWhitelist($laminasCoreLibrary);
     }
 
     /*
      * Omit from code coverage reports the contents of the tests directory
      */
-    $codeCoverageFilter->addDirectoryToBlacklist($zfCoreTests, '');
+    $codeCoverageFilter->addDirectoryToBlacklist($laminasCoreTests, '');
     $codeCoverageFilter->addDirectoryToBlacklist(PEAR_INSTALL_DIR, '');
     $codeCoverageFilter->addDirectoryToBlacklist(PHP_LIBDIR, '');
 

@@ -1,5 +1,3 @@
-sudo: false
-
 language: php
 
 branches:
@@ -12,6 +10,7 @@ cache:
     - $HOME/.composer/cache
  
 matrix:
+  fast_finish: true
     allow_failures:
         - php: hhvm
 matrix:
@@ -39,5 +38,4 @@ script:
   - if [[ $EXECUTE_CS_CHECK == 'true' ]]; then ./vendor/bin/phpcs --standard=PSR2 --ignore=tests/Bootstrap.php library tests ; fi
   
 notifications:
-  irc: "irc.freenode.org#zftalk.dev"
   email: false
