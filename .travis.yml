@@ -13,5 +13,4 @@ script:
   - ./bin/check-cs.sh
   
 notifications:
-  irc: "irc.freenode.org#zftalk.dev"
   email: false

@@ -1,22 +1,21 @@
 <?php
-/**
- * Zend Framework (http://framework.zend.com/)
- *
- * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
- * @license   http://framework.zend.com/license/new-bsd New BSD License
- */
-namespace ZendTest\Xml;
 
-use ZendXml\Security as XmlSecurity;
-use ZendXml\Exception;
+/**
+ * @see       https://github.com/laminas/laminas-xml for the canonical source repository
+ * @copyright https://github.com/laminas/laminas-xml/blob/master/COPYRIGHT.md
+ * @license   https://github.com/laminas/laminas-xml/blob/master/LICENSE.md New BSD License
+ */
+namespace LaminasTest\Xml;
+
 use DOMDocument;
+use Laminas\Xml\Exception;
+use Laminas\Xml\Security as XmlSecurity;
 use SimpleXMLElement;
 
 class SecurityTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @expectedException ZendXml\Exception\RuntimeException
+     * @expectedException Laminas\Xml\Exception\RuntimeException
      */
     public function testScanForXEE()
     {
@@ -28,13 +27,13 @@ class SecurityTest extends \PHPUnit_Framework_TestCase
 </results>
 XML;
 
-        $this->setExpectedException('ZendXml\Exception\RuntimeException');
+        $this->setExpectedException('Laminas\Xml\Exception\RuntimeException');
         $result = XmlSecurity::scan($xml);
     }
 
     public function testScanForXXE()
     {
-        $file = tempnam(sys_get_temp_dir(), 'ZendXml_Security');
+        $file = tempnam(sys_get_temp_dir(), 'laminas-xml_Security');
         file_put_contents($file, 'This is a remote content!');
         $xml = <<<XML
 <?xml version="1.0"?>
@@ -95,7 +94,7 @@ XML;
 
     public function testScanFile()
     {
-        $file = tempnam(sys_get_temp_dir(), 'ZendXml_Security');
+        $file = tempnam(sys_get_temp_dir(), 'laminas-xml_Security');
         file_put_contents($file, $this->_getXml());
 
         $result = XmlSecurity::scanFile($file);
