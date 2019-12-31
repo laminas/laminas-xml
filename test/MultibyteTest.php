@@ -1,15 +1,16 @@
 <?php
+
 /**
- * @see       https://github.com/zendframework/ZendXml for the canonical source repository
- * @copyright Copyright (c) 2018 Zend Technologies USA Inc. (https://www.zend.com)
- * @license   https://github.com/zendframework/ZendXml/blob/master/LICENSE.md New BSD License
+ * @see       https://github.com/laminas/laminas-xml for the canonical source repository
+ * @copyright https://github.com/laminas/laminas-xml/blob/master/COPYRIGHT.md
+ * @license   https://github.com/laminas/laminas-xml/blob/master/LICENSE.md New BSD License
  */
 
-namespace ZendXmlTest;
+namespace LaminasTest\Xml;
 
+use Laminas\Xml\Exception;
 use PHPUnit\Framework\TestCase;
 use ReflectionMethod;
-use ZendXml\Exception;
 
 /**
  * @group ZF2015-06
@@ -40,7 +41,7 @@ XML;
     }
 
     /**
-     * Invoke ZendXml\Security::heuristicScan with the provided XML.
+     * Invoke Laminas\Xml\Security::heuristicScan with the provided XML.
      *
      * @param string $xml
      * @return void
@@ -48,7 +49,7 @@ XML;
      */
     public function invokeHeuristicScan($xml)
     {
-        $r = new ReflectionMethod('ZendXml\Security', 'heuristicScan');
+        $r = new ReflectionMethod('Laminas\Xml\Security', 'heuristicScan');
         $r->setAccessible(true);
         return $r->invoke(null, $xml);
     }
@@ -63,7 +64,7 @@ XML;
         $xml = str_replace('{ENCODING}', $encoding, $xml);
         $xml = iconv('UTF-8', $encoding, $xml);
         $this->assertNotSame(0, strncmp($xml, $bom, $bomLength));
-        $this->expectException('ZendXml\Exception\RuntimeException');
+        $this->expectException('Laminas\Xml\Exception\RuntimeException');
         $this->expectExceptionMessage('ENTITY');
         $this->invokeHeuristicScan($xml);
     }
@@ -77,7 +78,7 @@ XML;
         $xml  = str_replace('{ENCODING}', $encoding, $xml);
         $orig = iconv('UTF-8', $encoding, $xml);
         $xml  = $bom . $orig;
-        $this->expectException('ZendXml\Exception\RuntimeException');
+        $this->expectException('Laminas\Xml\Exception\RuntimeException');
         $this->expectExceptionMessage('ENTITY');
         $this->invokeHeuristicScan($xml);
     }
@@ -118,7 +119,7 @@ XML;
         $xml = str_replace('{ENCODING}', 'UTF-8', $xml);
         $xml = iconv('UTF-8', $encoding, $xml);
         $xml = $bom . $xml;
-        $this->expectException('ZendXml\Exception\RuntimeException');
+        $this->expectException('Laminas\Xml\Exception\RuntimeException');
         $this->expectExceptionMessage('ENTITY');
         $this->invokeHeuristicScan($xml);
     }
