@@ -1,40 +1,48 @@
 {
-    "name": "zendframework/zendxml",
+    "name": "laminas/laminas-xml",
     "description": "Utility library for XML usage, best practices, and security in PHP",
-    "type": "library",
     "license": "BSD-3-Clause",
     "keywords": [
-        "zf2",
+        "laminas",
         "xml",
         "security"
     ],
-    "homepage": "http://packages.zendframework.com/",
-    "autoload": {
-        "psr-0": {
-            "ZendXml\\": "library/"
-        }
+    "homepage": "https://laminas.dev",
+    "support": {
+        "docs": "https://docs.laminas.dev/laminas-xml/",
+        "issues": "https://github.com/laminas/laminas-xml/issues",
+        "source": "https://github.com/laminas/laminas-xml",
+        "rss": "https://github.com/laminas/laminas-xml/releases.atom",
+        "chat": "https://laminas.dev/chat",
+        "forum": "https://discourse.laminas.dev"
     },
-    "autoload-dev": {
-        "psr-4": {
-            "ZendTest\\Xml\\": "tests/ZendXmlTest/"
-        }
-    },
-    "repositories": [
-        {
-            "type": "composer",
-            "url": "http://packages.zendframework.com/"
-        }
-    ],
-    "require": {
-        "php": ">=5.3.3"
+    "config": {
+        "sort-packages": true
     },
     "extra": {
         "branch-alias": {
             "dev-master": "1.0-dev"
         }
     },
+    "require": {
+        "php": ">=5.3.3",
+        "laminas/laminas-zendframework-bridge": "^1.0"
+    },
     "require-dev": {
         "phpunit/phpunit": "~3.7",
         "squizlabs/php_codesniffer": "~1.5"
+    },
+    "autoload": {
+        "psr-0": {
+            "Laminas\\Xml\\": "library/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "LaminasTest\\Xml\\": "tests/LaminasTest/Xml/"
+        }
+    },
+    "replace": {
+        "zendframework/zendxml": "self.version"
     }
 }
