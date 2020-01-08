@@ -9,7 +9,6 @@
     ],
     "homepage": "https://laminas.dev",
     "support": {
-        "docs": "https://docs.laminas.dev/laminas-xml/",
         "issues": "https://github.com/laminas/laminas-xml/issues",
         "source": "https://github.com/laminas/laminas-xml",
         "rss": "https://github.com/laminas/laminas-xml/releases.atom",
