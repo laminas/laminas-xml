@@ -9,6 +9,8 @@
 namespace LaminasTest\Xml;
 
 use Laminas\Xml\Exception;
+use Laminas\Xml\Exception\RuntimeException;
+use Laminas\Xml\Security;
 use PHPUnit\Framework\TestCase;
 use ReflectionMethod;
 
@@ -17,7 +19,10 @@ use ReflectionMethod;
  */
 class MultibyteTest extends TestCase
 {
-    public function multibyteEncodings()
+    /**
+     * @psalm-return array<array-key, array{0: string, 1: string, 2: int}>
+     */
+    public function multibyteEncodings(): array
     {
         return [
             'UTF-16LE' => ['UTF-16LE', pack('CC', 0xff, 0xfe), 3],
@@ -27,44 +32,45 @@ class MultibyteTest extends TestCase
         ];
     }
 
-    public function getXmlWithXXE()
+    public function getXmlWithXXE(): string
     {
         return <<<XML
-<?xml version="1.0" encoding="{ENCODING}"?>
-<!DOCTYPE methodCall [
-  <!ENTITY pocdata SYSTEM "file:///etc/passwd">
-]>
-<methodCall>
-    <methodName>retrieved: &pocdata;</methodName>
-</methodCall>
-XML;
+            <?xml version="1.0" encoding="{ENCODING}"?>
+            <!DOCTYPE methodCall [
+                <!ENTITY pocdata SYSTEM "file:///etc/passwd">
+            ]>
+            <methodCall>
+                <methodName>retrieved: &pocdata;</methodName>
+            </methodCall>
+            XML;
     }
 
     /**
      * Invoke Laminas\Xml\Security::heuristicScan with the provided XML.
      *
-     * @param string $xml
-     * @return void
      * @throws Exception\RuntimeException
      */
-    public function invokeHeuristicScan($xml)
+    public function invokeHeuristicScan(string $xml): void
     {
-        $r = new ReflectionMethod('Laminas\Xml\Security', 'heuristicScan');
+        $r = new ReflectionMethod(Security::class, 'heuristicScan');
         $r->setAccessible(true);
-        return $r->invoke(null, $xml);
+        $r->invoke(null, $xml);
     }
 
     /**
      * @dataProvider multibyteEncodings
      * @group heuristicDetection
      */
-    public function testDetectsMultibyteXXEVectorsUnderFPMWithEncodedStringMissingBOM($encoding, $bom, $bomLength)
-    {
+    public function testDetectsMultibyteXXEVectorsUnderFPMWithEncodedStringMissingBOM(
+        string $encoding,
+        string $bom,
+        int $bomLength
+    ): void {
         $xml = $this->getXmlWithXXE();
         $xml = str_replace('{ENCODING}', $encoding, $xml);
         $xml = iconv('UTF-8', $encoding, $xml);
         $this->assertNotSame(0, strncmp($xml, $bom, $bomLength));
-        $this->expectException('Laminas\Xml\Exception\RuntimeException');
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('ENTITY');
         $this->invokeHeuristicScan($xml);
     }
@@ -72,31 +78,33 @@ XML;
     /**
      * @dataProvider multibyteEncodings
      */
-    public function testDetectsMultibyteXXEVectorsUnderFPMWithEncodedStringUsingBOM($encoding, $bom)
-    {
+    public function testDetectsMultibyteXXEVectorsUnderFPMWithEncodedStringUsingBOM(
+        string $encoding,
+        string $bom
+    ): void {
         $xml  = $this->getXmlWithXXE();
         $xml  = str_replace('{ENCODING}', $encoding, $xml);
         $orig = iconv('UTF-8', $encoding, $xml);
         $xml  = $bom . $orig;
-        $this->expectException('Laminas\Xml\Exception\RuntimeException');
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('ENTITY');
         $this->invokeHeuristicScan($xml);
     }
 
-    public function getXmlWithoutXXE()
+    public function getXmlWithoutXXE(): string
     {
         return <<<XML
-<?xml version="1.0" encoding="{ENCODING}"?>
-<methodCall>
-    <methodName>retrieved: &pocdata;</methodName>
-</methodCall>
-XML;
+            <?xml version="1.0" encoding="{ENCODING}"?>
+            <methodCall>
+                <methodName>retrieved: &pocdata;</methodName>
+            </methodCall>
+            XML;
     }
 
     /**
      * @dataProvider multibyteEncodings
      */
-    public function testDoesNotFlagValidMultibyteXmlAsInvalidUnderFPM($encoding)
+    public function testDoesNotFlagValidMultibyteXmlAsInvalidUnderFPM(string $encoding): void
     {
         $xml = $this->getXmlWithoutXXE();
         $xml = str_replace('{ENCODING}', $encoding, $xml);
@@ -113,13 +121,15 @@ XML;
      * @dataProvider multibyteEncodings
      * @group mixedEncoding
      */
-    public function testDetectsXXEWhenXMLDocumentEncodingDiffersFromFileEncoding($encoding, $bom)
-    {
+    public function testDetectsXXEWhenXMLDocumentEncodingDiffersFromFileEncoding(
+        string $encoding,
+        string $bom
+    ): void {
         $xml = $this->getXmlWithXXE();
         $xml = str_replace('{ENCODING}', 'UTF-8', $xml);
         $xml = iconv('UTF-8', $encoding, $xml);
         $xml = $bom . $xml;
-        $this->expectException('Laminas\Xml\Exception\RuntimeException');
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('ENTITY');
         $this->invokeHeuristicScan($xml);
     }
