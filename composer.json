@@ -25,12 +25,13 @@
         }
     },
     "require": {
-        "php": "^5.6 || ^7.0",
+        "php": "^7.3 || ^8.0",
         "laminas/laminas-zendframework-bridge": "^1.0"
     },
     "require-dev": {
         "laminas/laminas-coding-standard": "~1.0.0",
-        "phpunit/phpunit": "^5.7.27 || ^6.5.8 || ^7.1.4"
+        "phpunit/phpunit": "^9.4",
+        "ext-iconv": "*"
     },
     "autoload": {
         "psr-4": {
