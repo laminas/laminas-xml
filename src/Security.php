@@ -5,6 +5,9 @@ namespace Laminas\Xml;
 use DOMDocument;
 use SimpleXMLElement;
 
+/**
+ * @final
+ */
 class Security
 {
     const ENTITY_DETECT = 'Detected use of ENTITY in XML, disabled to prevent XXE/XEE attacks';
@@ -15,7 +18,7 @@ class Security
      * @param  string $xml
      * @throws Exception\RuntimeException If entity expansion or external entity declaration was discovered.
      */
-    protected static function heuristicScan($xml)
+    protected static function heuristicScan(string $xml): void
     {
         foreach (self::getEntityComparison($xml) as $compare) {
             if (strpos($xml, $compare) !== false) {
@@ -27,15 +30,20 @@ class Security
     /**
      * Scan XML string for potential XXE and XEE attacks
      *
-     * @param   string $xml
-     * @param   int $libXmlConstants additional libxml constants to pass in
-     * @param   callable $callback the callback to use to create the dom element
-     * @param   DomDocument|null $dom
+     * @param string            $xml
+     * @param DOMDocument|null  $dom
+     * @param int               $libXmlConstants additional libxml constants to pass in
+     * @param callable          $callback        the callback to use to create the dom element
+     *
      * @return  SimpleXMLElement|DomDocument|boolean
      * @throws  Exception\RuntimeException
      */
-    private static function scanString($xml, $libXmlConstants, callable $callback, DOMDocument|null $dom = null)
-    {
+    private static function scanString(
+        string $xml,
+        DOMDocument|null $dom = null,
+        int $libXmlConstants,
+        callable $callback
+    ): SimpleXMLElement|DomDocument|bool {
         // If running with PHP-FPM we perform an heuristic scan
         // We cannot use libxml_disable_entity_loader because of this bug
         // @see https://bugs.php.net/bug.php?id=64938
@@ -117,8 +125,11 @@ class Security
      * @throws  Exception\RuntimeException
      * @return  SimpleXMLElement|DomDocument|boolean
      */
-    public static function scan($xml, DOMDocument|null $dom = null, $libXmlConstants = 0)
-    {
+    public static function scan(
+        string $xml,
+        DOMDocument|null $dom = null,
+        int $libXmlConstants = 0
+    ): SimpleXMLElement|DomDocument|bool {
         $callback = function ($xml, $dom, $constants) {
             return $dom->loadXml($xml, $constants);
         };
@@ -128,14 +139,17 @@ class Security
     /**
      * Scan HTML string for potential XXE and XEE attacks
      *
-     * @param   string $xml
+     * @param   string $html
      * @param   DomDocument|null $dom
      * @param   int $libXmlConstants additional libxml constants to pass in
      * @throws  Exception\RuntimeException
      * @return  SimpleXMLElement|DomDocument|boolean
      */
-    public static function scanHtml($html, DOMDocument|null $dom = null, $libXmlConstants = 0)
-    {
+    public static function scanHtml(
+        string $html,
+        DOMDocument|null $dom = null,
+        int $libXmlConstants = 0
+    ): SimpleXMLElement|DomDocument|bool {
         $callback = function ($html, $dom, $constants) {
             return $dom->loadHtml($html, $constants);
         };
@@ -150,7 +164,7 @@ class Security
      * @throws Exception\InvalidArgumentException
      * @return SimpleXMLElement|DomDocument
      */
-    public static function scanFile($file, DOMDocument|null $dom = null)
+    public static function scanFile(string $file, DOMDocument|null $dom = null): SimpleXMLElement|DomDocument
     {
         if (! file_exists($file)) {
             throw new Exception\InvalidArgumentException(
@@ -174,7 +188,7 @@ class Security
      *
      * @return boolean
      */
-    public static function isPhpFpm()
+    public static function isPhpFpm(): bool
     {
         $isVulnerableVersion = version_compare(PHP_VERSION, '5.6', 'ge')
             && version_compare(PHP_VERSION, '5.6.6', 'lt');
@@ -191,7 +205,7 @@ class Security
      * @param string $xml
      * @return string[]
      */
-    protected static function getEntityComparison($xml)
+    protected static function getEntityComparison(string $xml): array
     {
         $encodingMap = self::getAsciiEncodingMap();
         return array_map(function ($encoding) use ($encodingMap) {
@@ -209,7 +223,7 @@ class Security
      * @param string $xml
      * @return string File encoding
      */
-    protected static function detectStringEncoding($xml)
+    protected static function detectStringEncoding(string $xml): string
     {
         return self::detectBom($xml) ?: self::detectXmlStringEncoding($xml);
     }
@@ -224,7 +238,7 @@ class Security
      * @param string $string
      * @return false|string Returns encoding on success.
      */
-    protected static function detectBom($string)
+    protected static function detectBom(string $string): false|string
     {
         foreach (self::getBomMap() as $criteria) {
             if (0 === strncmp($string, $criteria['bom'], $criteria['length'])) {
@@ -240,7 +254,7 @@ class Security
      * @param string $xml
      * @return string Encoding
      */
-    protected static function detectXmlStringEncoding($xml)
+    protected static function detectXmlStringEncoding(string $xml): string
     {
         foreach (self::getAsciiEncodingMap() as $encoding => $generator) {
             $prefix = $generator('<' . '?xml');
@@ -267,7 +281,7 @@ class Security
      * @param string $fileEncoding
      * @return string[] Potential XML encodings
      */
-    protected static function detectXmlEncoding($xml, $fileEncoding)
+    protected static function detectXmlEncoding(string $xml, string $fileEncoding): array
     {
         $encodingMap = self::getAsciiEncodingMap();
         $generator   = $encodingMap[$fileEncoding];
@@ -310,7 +324,7 @@ class Security
      * @link https://en.wikipedia.org/wiki/Byte_order_mark
      * @return array
      */
-    protected static function getBomMap()
+    protected static function getBomMap(): array
     {
         return [
             [
@@ -355,7 +369,7 @@ class Security
      *
      * @return array
      */
-    protected static function getAsciiEncodingMap()
+    protected static function getAsciiEncodingMap(): array
     {
         return [
             'UTF-32BE'   => function ($ascii) {
@@ -396,7 +410,7 @@ class Security
      * @param int $end
      * @return string
      */
-    protected static function substr($string, $start, $end)
+    protected static function substr(string $string, int $start, int $end): string
     {
         $substr = '';
         for ($i = $start; $i < $end; $i += 1) {
