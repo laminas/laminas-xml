@@ -6,6 +6,7 @@ use Laminas\Xml\Exception;
 use Laminas\Xml\Exception\RuntimeException;
 use Laminas\Xml\Security;
 use PHPUnit\Framework\TestCase;
+use Random\Engine\Secure;
 use ReflectionMethod;
 
 /**
@@ -46,9 +47,7 @@ class MultibyteTest extends TestCase
      */
     public function invokeHeuristicScan(string $xml): void
     {
-        $r = new ReflectionMethod(Security::class, 'heuristicScan');
-        $r->setAccessible(true);
-        $r->invoke(null, $xml);
+        TestableSecurity::heuristicScan($xml);
     }
 
     /**
